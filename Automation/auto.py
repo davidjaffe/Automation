@@ -58,8 +58,10 @@ class auto():
         if self.debug>0: print 'auto.first Opened',cf,'sections=',secs,'seckey=',seckey,'DryRun=',DryRun
 
         errorLog = {}
+        nEntries = 0
         for sec in secs:
             if seckey in sec:
+                nEntries += 1
                 options = config.options(sec)
                 items = config.items(sec)
                 if self.debug>1:
@@ -96,6 +98,7 @@ class auto():
                         if sec not in errorLog: errorLog[sec] = []
                         errorLog[sec].append( pair )
                     if self.debug>0 or 'ERROR' in secondPart: print pair[0],secondPart
+        print 'auto.first Processed',nEntries,'entries'
                                 
         for key in errorLog:
             print 'auto.first ERROR',key,errorLog[key]
