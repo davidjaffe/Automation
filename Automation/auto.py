@@ -50,7 +50,9 @@ class auto():
         '''
 
         if seckey is None : sys.exit('auto.first input seckey is None. NO ACTION TAKEN')
-        
+
+        if DryRun is True : print 'auto.first Dry run only. Just show commands that would be executed.'
+            
         config = ConfigParser.RawConfigParser()
         cf = 'auto.cfg'
         config.read(cf)
