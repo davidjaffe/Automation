@@ -71,6 +71,11 @@ class auto():
                     print 'auto.first options',options
                     print 'auto.first items=',items
                 newRecord = copy.copy(self.newRecord_template)
+                getTheFile = False
+                for pair in items:
+                    k,v = pair
+                    if k=='talk_reference':
+                        getTheFile = v==''
                 for pair in items:
                     k,v = pair
                     for fav in self.fav_items:
@@ -78,18 +83,29 @@ class auto():
                             if self.debug>1: print 'auto.first fav,k,v',fav,k,v
                             if fav=='talk_url' :
                                 fn = os.path.basename(v)
-                                d = str(self.get_dest + fn)
-                                if os.path.isfile(d):
-                                    print '\nauto.first',sec,'No curl because file exists. File',d
+                                if self.debug>2: print 'auto.first len(fn)',len(fn)
+                                if len(fn)>0:    
+                                    d = str(self.get_dest + fn)
+                                    if os.path.isfile(d):
+                                        print '\nauto.first',sec,'No curl because file exists. File',d
+                                    elif not getTheFile:
+                                        print '\nauto.first',sec,'No curl because talk_reference exists'
+                                    elif v=='NA':
+                                        print '\nauto.first',sec,'No curl because talk_reference is NA'
+                                    else:
+                                        if self.debug>2: print 'auto.first d',d,'self.fav_items[fav]',self.fav_items[fav]
+                                        com = copy.copy(self.fav_items[fav])
+                                        iURL = com.index('URL')
+                                        iDEST= com.index('DEST')
+                                        com[iURL] = v
+                                        com[iDEST]= d
+                                        print '\nauto.first',sec,'com',' '.join(com)
+                                        if not DryRun: subprocess.call(com)
                                 else:
-                                    if self.debug>2: print 'auto.first d',d,'self.fav_items[fav]',self.fav_items[fav]
-                                    com = copy.copy(self.fav_items[fav])
-                                    iURL = com.index('URL')
-                                    iDEST= com.index('DEST')
-                                    com[iURL] = v
-                                    com[iDEST]= d
-                                    print '\nauto.first',sec,'com',' '.join(com)
-                                    if not DryRun: subprocess.call(com)
+                                    if getTheFile:
+                                        print '\nauto.first',sec,'FILENAME IS ZERO LENGTH. NO TRANSFER'
+                                    else:
+                                        print '\nauto.first',sec,'No file to transfer because talk_reference already exists'
                             else:
                                 newRecord[self.fav_items[fav]] = [fav,v]
                 if self.debug>0: print 'auto.first new record for',sec
