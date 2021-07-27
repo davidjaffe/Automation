@@ -3,6 +3,15 @@
 20210727 created. parses Public ConferenceTalks text to fill entries used in auto.cfg
         Must be run in /Users/djaffe/Documents/Belle II/SpeakersCommittee/Automation
 
+workflow
+1. by hand: cut/paste list of authors, titles from Public Conference talks to 'filler.input'
+2. python filler.py
+   input from keyboard: keyword, date, conference long name, conference short name, conference url
+   output will be 'filler.output'
+3. insert 'filler.output' into auto.cfg
+4. fill talk urls, abstracts, etc. in auto.cfg
+5. run auto.py
+
 '''
 import math
 import sys,os
