@@ -84,10 +84,11 @@ class filler():
         return one filled dict of items for one talk given author and title
         '''
         one = {}
+        
         for i in self.fav_items:
             if i==0:
                 sn = self.global_items['short_conf_name']
-                one[i] = '[' + sn + '_' + author + ']'
+                one[i] = '[' + sn + '_' + author.replace(' ','_') + ']'
             else:
                 v = self.fav_items[i]
                 if v in self.global_items:
