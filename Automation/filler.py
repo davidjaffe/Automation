@@ -37,10 +37,10 @@ class filler():
 
         self.default_HEADER = '[TEMPLATE_for_cutnpaste]'
 
-        self.global_items = {'date(dd/mm/yyyy): ':'dd/mm/yyyy',
-                                 'conference: ':'',
-                                 'keywords: ':'',
-                                 'conf_url: ':'',
+        self.global_items = {'date:':'dd/mm/yyyy',
+                                 'conference:':'',
+                                 'keywords:':'',
+                                 'conf_url:':'',
                                  'short_conf_name: ':''
                                  }
 
@@ -85,6 +85,9 @@ class filler():
         '''
         one = {}
         
+        if self.debug > 1:
+            print 'filler.fillOne self.fav_items',self.fav_items,'self.global_items',self.global_items
+            
         for i in self.fav_items:
             if i==0:
                 sn = self.global_items['short_conf_name: ']
