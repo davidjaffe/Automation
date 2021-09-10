@@ -117,6 +117,7 @@ class filler():
         fout= open(self.output,'w')
         ctr = 0
         for line in fin:
+            if self.debug > 1 : print 'filler.fill line[:-1]',line[:-1]
             if line[0]!="#":
                 ctr += 1
                 author,title,junk = line.split('"')
