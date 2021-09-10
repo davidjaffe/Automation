@@ -37,11 +37,11 @@ class filler():
 
         self.default_HEADER = '[TEMPLATE_for_cutnpaste]'
 
-        self.global_items = {'date:':'dd/mm/yyyy',
-                                 'conference:':'',
-                                 'keywords:':'',
-                                 'conf_url:':'',
-                                 'short_conf_name':''
+        self.global_items = {'date(dd/mm/yyyy): ':'dd/mm/yyyy',
+                                 'conference: ':'',
+                                 'keywords: ':'',
+                                 'conf_url: ':'',
+                                 'short_conf_name: ':''
                                  }
 
         return
@@ -87,7 +87,7 @@ class filler():
         
         for i in self.fav_items:
             if i==0:
-                sn = self.global_items['short_conf_name']
+                sn = self.global_items['short_conf_name: ']
                 one[i] = '[' + sn + '_' + author.replace(' ','_') + ']'
             else:
                 v = self.fav_items[i]
@@ -114,12 +114,13 @@ class filler():
         fout= open(self.output,'w')
         ctr = 0
         for line in fin:
-            ctr += 1
-            author,title,junk = line.split('"')
-            author = author.strip()
-            one = self.fillOne(author,title)
-            for k in sorted(one):
-                fout.write(one[k]+'\n')
+            if line[0]!="#":
+                ctr += 1
+                author,title,junk = line.split('"')
+                author = author.strip()
+                one = self.fillOne(author,title)
+                for k in sorted(one):
+                    fout.write(one[k]+'\n')
         fin.close()
         fout.close()
         print 'filler.fill Wrote',ctr,'entries to',self.output
