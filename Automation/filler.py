@@ -93,7 +93,7 @@ class filler():
             shortName= None
         elif len(sline)==3:
             dayMonth = self.getDayMonth(sline[2])
-            shortName= sline[1].replace(')','').strip()
+            shortName= sline[1].replace(')','').strip().replace(" ","_")
         if dayMonth is not None:
             dayMonth += '/' + str(self.year)
 
@@ -128,6 +128,7 @@ class filler():
             if len(u)<=1 :
                 u = ''.join([c[0].upper() for c in confName.split()])
         shortName = u + '_' +  str(self.year)
+        shortName = shortName.replace(" ","_") # no blanks
         if self.debug > 1 : print 'filler.getShortName shortName',shortName
         return shortName
     def getTemplate(self):
