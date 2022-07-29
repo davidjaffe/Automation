@@ -85,7 +85,7 @@ class auto():
                                 fn = os.path.basename(v)
                                 if self.debug>2: print 'auto.first len(fn)',len(fn)
                                 if len(fn)>0:
-                                    if ('?' in fn) or ('&' in fn) or ('%' in fn) or fn=='0.pdf' or (len(fn)==5 and fn.split('.')[1]=='pdf'):  # protection against indico naming all files 0.pdf or 1.pdf, or weird paths defined by indico, etc.
+                                    if ('?' in fn) or ('&' in fn) or ('%' in fn) or fn=='0.pdf' or fn=='pres.pdf' or (len(fn)==5 and fn.split('.')[1]=='pdf'):  # protection against indico naming all files 0.pdf or 1.pdf, or weird paths defined by indico, etc.
                                         d = str(self.get_dest + sec + '.pdf')
                                     else:
                                         d = str(self.get_dest + fn)
