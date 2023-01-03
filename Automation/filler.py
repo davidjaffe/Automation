@@ -33,6 +33,7 @@ class filler():
         self.debug = debug
         self.year  = year
         print 'filler.__init__ debug',self.debug,'year',self.year,' **** NOTE THE YEAR. IMPORTANT TO CHECK IN JAN and FEB of NEW YEAR **** '
+        print 'filler.__init__ to set year to 2022 use command `python2 filler.py 0 2022`'
 
         self.acfg  = 'auto.cfg'
         self.input = 'filler.input'
