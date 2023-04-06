@@ -38,10 +38,11 @@ class auto():
 
         self.reminderTemplate =     "Dear {colleague},\n\n \
     Thank you for your presentation at {conference} on behalf of the Belle II collaboration.\n\n \
-    If you plan to submit a paper for the conference Proceedings (which might be required or optional, depending on the conference), please notify {responsiblePCmember} {rPCemail} of the Belle II Publications Committee (PC). The PC is responsible for conference Proceedings submitted on behalf of the Belle II Collaboration.\n\n \
+    If you plan to submit a paper for the conference Proceedings (which might be required or optional, depending on the conference), please notify {responsiblePCmember} {rPCemail} of the Belle II Publications Committee (PC). The PC is now making an effort to ensure that conference proceedings submitted on behalf of Belle II are clear, and that results and plots included are all approved. We appreciate your help with this.\n\n \
     Further instructions can be found in the PC Review of Conference Proceedings at {link} .\n\n \
     Best regards,\n \
     {rSCmember} on behalf of the Speakers Committee"
+    #The PC is responsible for conference Proceedings submitted on behalf of the Belle II Collaboration.
         self.responsiblePCmember = 'Alan Schwartz'
         self.responsibleSCmember  = 'David Jaffe'
         self.PClink = 'https://confluence.desy.de/display/BI/Review*of*conference*proceedings'
