@@ -22,11 +22,12 @@ from lxml.html import parse  # used by readB2GM
 
 
 class readB2MMS():
-    def __init__(self):
+    def __init__(self,debug=-1):
 
-        self.debug = 0
+        self.debug = debug
 
-        self.B2MembersFile = 'Members_List_20230308.csv'
+        self.B2MembersFile = 'Members_List_20230531.csv' ##20230308.csv'
+        print 'readB2MMS.__init__ debug',debug
         
         
         return
@@ -64,6 +65,7 @@ class readB2MMS():
     def goodMatch(self,a,b,ch='',inIt=False):
         A = a.strip().replace(ch,'').lower()
         B = b.strip().replace(ch,'').lower()
+        if self.debug>2: print 'readB2MMS.goodMatch a',a,'b',b,'A',A,'B',B,'ch',ch,'inIt',inIt
         if A==B and len(A)>0: return True
         if inIt:
             if (A in B or B in A) and len(A)>0 and len(B)>0: return True
@@ -89,7 +91,7 @@ class readB2MMS():
             Matches = [] # list of B2id of potential matches
             for B2id in Members:
                 firstn,middlen,lastn,lastnpre,sname = Members[B2id]
-                if debug>2: print 'climate.matchMtoI first/middle/last/pre/sname',firstn,'/',middlen,'/',lastn,'/',lastnpre,'/',sname
+                if debug>2: print 'readB2MMS.matchMtoI first/middle/last/pre/sname',firstn,'/',middlen,'/',lastn,'/',lastnpre,'/',sname
                 if self.goodMatch(name1,lastn):
                     Matches.append(B2id)
                 if self.goodMatch(name2,lastn):
@@ -109,11 +111,11 @@ class readB2MMS():
             if len(Matches)>1 and inst!=None: # try to match one name and institution
                 for ch in spacers:
                     newMatch = []
-                    if debug>1: print 'climate.matchMtoI name1/name2/inst',name1,'/',name2,'/',inst,'try to match one name and institution to resolve multi-match'.upper()
+                    if debug>1: print 'readB2MMS.matchMtoI name1/name2/inst',name1,'/',name2,'/',inst,'try to match one name and institution to resolve multi-match'.upper()
                     for B2id in Matches:
                         firstn,middlen,lastn,lastnpre,sname = Members[B2id]
                         for name in [firstn,lastn,firstn]:
-                            if debug>1: print 'climate.matchMtoI B2id,name/sname',B2id,name,'/',sname
+                            if debug>1: print 'readB2MMS.matchMtoI B2id,name/sname',B2id,name,'/',sname
                             if self.goodMatch(name1,name,ch=ch) and (sname in inst): newMatch.append(B2id)
                             if self.goodMatch(name2,name,ch=ch) and (sname in inst): newMatch.append(B2id)
                     if len(newMatch)>0: Matches = newMatch
@@ -121,11 +123,11 @@ class readB2MMS():
                         
             if len(Matches)==0 and inst!=None: # no matches, desperation time
                 Matches = []
-                if debug>1: print 'climate.matchMtoI name1/name2/inst',name1,'/',name2,'/',inst,'try to match one name and institution to resolve 0 match'.upper()
+                if debug>1: print 'readB2MMS.matchMtoI name1/name2/inst',name1,'/',name2,'/',inst,'try to match one name and institution to resolve 0 match'.upper()
                 for B2id in Members:
                     if self.desperateMatch(Members[B2id],P):
                         Matches.append(B2id)
-                        if debug>1: print 'climate.matchMtoI potential match B2id,name/sname',B2id,Members[B2id]
+                        if debug>1: print 'readB2MMS.matchMtoI potential match B2id,name/sname',B2id,Members[B2id]
                         
             if len(Matches)>1:
                 newMatch = self.bestMatch(Matches,Members,P)
@@ -135,30 +137,30 @@ class readB2MMS():
             
             if L==0:   # --------------> NO MATCH
                 if debug>0:
-                    self.printAsUnicode([ 'climate.matchMtoI name1/name2/inst',name1,'/',name2,'/',inst,'*** NO MATCHES *** '])
+                    self.printAsUnicode([ 'readB2MMS.matchMtoI name1/name2/inst',name1,'/',name2,'/',inst,'*** NO MATCHES *** '])
                 TooFew += 1
                 ParpToInst.append( [P, None] ) # no match
             elif L==1: # --------------> One match
                 JustRight += 1
                 B2id = Matches[0]
                 sname = Members[B2id][-1]
-                if debug>1: print 'climate.matchMtoI B2id',B2id,'sname',sname,'Members[B2id]',Members[B2id]
+                if debug>1: print 'readB2MMS.matchMtoI B2id',B2id,'sname',sname,'Members[B2id]',Members[B2id]
                 if sname not in Insts:
-                    print 'climate.matchMtoI ERROR dict Insts does not contain key',sname,'for participant',P
+                    print 'readB2MMS.matchMtoI ERROR dict Insts does not contain key',sname,'for participant',P
                 ParpToInst.append( [P, Insts[sname]] )  # participant and Institution (city,country,longname,shortname)
             else:  # --------------> TOO MANY MATCHES
                 if debug>-1:
-                    self.printAsUnicode([ 'climate.matchMtoI',name1,'/',name2,'/',inst,L,'matches',Matches])
+                    self.printAsUnicode([ 'readB2MMS.matchMtoI',name1,'/',name2,'/',inst,L,'matches',Matches])
                     self.printMatches(Matches,Members) 
                 TooMany += 1
                 ParpToInst.append( [P, None] ) # too many matches
-        print 'climate.matchMtoI',len(Parps),'participants,',JustRight,'single matches,',TooMany,'multi-matches,',TooFew,'No matches'
+        print 'readB2MMS.matchMtoI',len(Parps),'participants,',JustRight,'single matches,',TooMany,'multi-matches,',TooFew,'No matches'
         
         if debug>1: # report participants and their institutions
             for pair in ParpToInst:
                 P,Home = pair
                 name1,name2,inst = self.unpackParticipants(P)
-                print 'climate.matchMtoI',name1,name2,
+                print 'readB2MMS.matchMtoI',name1,name2,
                 if Home is not None:
                     city,country,lname,sname = Home
                     print 'is from',sname,'(',lname,') in ',city,',',country
@@ -171,7 +173,7 @@ class readB2MMS():
         given an input list, try to print it as unicode
         if that fails, ignore error and print as ascii
         '''
-        #print 'climate.printAsUnicode wordList',wordList
+        #print 'readB2MMS.printAsUnicode wordList',wordList
         r = []
         for x in wordList:
             if type(x) is float or type(x) is int: x=str(x)
@@ -216,7 +218,7 @@ class readB2MMS():
                                 if self.goodMatch(x,L,ch=ch,inIt=inIt):
                                     if i not in imatch:
                                         imatch.append(i)
-                                        #print 'climate.bestMatch inIt,ch,x,L,i,imatch',inIt,ch,x,L,i,imatch
+                                        #print 'readB2MMS.bestMatch inIt,ch,x,L,i,imatch',inIt,ch,x,L,i,imatch
             
 
             if len(imatch)>1: newMatch.append(B2id)
@@ -225,7 +227,7 @@ class readB2MMS():
         if len(newMatch)==0:
             pass
         else:
-            wL = ['climate.bestMatch']
+            wL = ['readB2MMS.bestMatch']
             wL.extend(P)
             wL.append('matched to')
             for B2id in newMatch:
@@ -233,7 +235,7 @@ class readB2MMS():
                 if B2id!=newMatch[-1]: wL.append('or')
             if debug>0:
                 self.printAsUnicode(wL)
-                #print 'climate.bestMatch storeI',storeI
+                #print 'readB2MMS.bestMatch storeI',storeI
         return newMatch
         
     def desperateMatch(self,Member,P):

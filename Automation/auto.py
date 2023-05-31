@@ -23,7 +23,7 @@ class auto():
         print 'auto.__init__ debug',self.debug
 
         #### for generating reminder email
-        self.readB2MMS = readB2MMS.readB2MMS()
+        self.readB2MMS = readB2MMS.readB2MMS(debug=debug)
 
         self.B2Members = self.readB2MMS.readB2M()
         if debug > 1 : print self.B2Members
@@ -184,13 +184,30 @@ class auto():
         firstn = s[0]
         lastn = s[-1]
         middlen = None
-        if len(s)>2 : mn = s[1]
+        if len(s)>2 : middlen = s[1]
         matches = []
+        if self.debug>1 : print 'auto.getEmail author',author,'firstn',firstn,'middlen',middlen,'lastn',lastn
         for B2id in self.B2Members:
             fn,ln,email,category,inst = self.B2Members[B2id]
+            MATCHED = False
             if ln.lower()==lastn.lower() :
+                if self.debug>1 : print 'auto.getEmail lastname match',lastn,ln,'firstn',firstn,'fn',fn
                 if fn.lower()==firstn.lower() :
                     matches.append(B2id)
+                    MATCHED = True
+            if not MATCHED:
+                if self.readB2MMS.goodMatch(fn+ln,author):
+                    matches.append(B2id)
+                    MATCHED = True
+                elif self.readB2MMS.goodMatch(fn+ln,author,' '):
+                    matches.append(B2id)
+                    MATCHED = True
+                elif self.readB2MMS.goodMatch(fn+ln,author,'-'):
+                    matches.append(B2id)
+                    MATCHED = True
+                elif self.readB2MMS.goodMatch(fn+ln,author,'',inIt=True):
+                    matches.append(B2id)
+                    MATCHED = True
 
         if self.debug > 0 :
             print 'auto.getEmail author',author,'# matches',len(matches)
