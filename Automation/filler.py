@@ -22,7 +22,7 @@ import datetime
 #import numpy
 import copy
 #import glob # used in __init__
-import ConfigParser
+import configparser
 import subprocess
 import datetime
 
@@ -32,8 +32,8 @@ class filler():
 
         self.debug = debug
         self.year  = year
-        print 'filler.__init__ debug',self.debug,'year',self.year,' **** NOTE THE YEAR. IMPORTANT TO CHECK IN JAN and FEB of NEW YEAR **** '
-        print 'filler.__init__ to set year to 2022 use command `python2 filler.py 0 2022`'
+        print('filler.__init__ debug',self.debug,'year',self.year,' **** NOTE THE YEAR. IMPORTANT TO CHECK IN JAN and FEB of NEW YEAR **** ')
+        print('filler.__init__ to set year to 2022 use command `python2 filler.py 0 2022`')
 
         self.acfg  = 'auto.cfg'
         self.input = 'filler.input'
@@ -59,13 +59,13 @@ class filler():
         '''
         line = '(nn-mm Month ...)'
         '''
-        if self.debug > 0 : print 'filler.getDayMonth line',line
+        if self.debug > 0 : print('filler.getDayMonth line',line)
         imonth = {1:'Jan', 2:'Feb', 3:'Mar', 4:'Apr', 5:'May', 6:'Jun', 7:'Jul', 8:'Aug', 9:'Sep', 10:'Oct', 11:'Nov', 12:'Dec'}
         dayMonth, day, month = None, None, None
         lp = max(0,line.find('('))
         rp = line.find(')')
         if rp<0 : rp = len(line)
-        if self.debug > 0 : print 'filler.getDayMonth lp,rp,line[lp:rp],line[lp+1].isdigit()',lp,rp,line[lp:rp],line[lp+1].isdigit()
+        if self.debug > 0 : print('filler.getDayMonth lp,rp,line[lp:rp],line[lp+1].isdigit()',lp,rp,line[lp:rp],line[lp+1].isdigit())
         if line[lp].isdigit():
             if line[lp+1].isdigit() :
                 day = line[lp] + line[lp+1]
@@ -75,9 +75,9 @@ class filler():
             for k in imonth:
                 if imonth[k] in line[lp:rp]: month = '%02d' % k
 
-        if self.debug > 0 : print 'filler.getDayMonth day,month',day,month
+        if self.debug > 0 : print('filler.getDayMonth day,month',day,month)
         if day is not None and month is not None : dayMonth = day + '/' + month
-        if self.debug > 0 : print 'filler.getDayMonth dayMonth',dayMonth
+        if self.debug > 0 : print('filler.getDayMonth dayMonth',dayMonth)
         return dayMonth
     def setGlobal(self,line):
         '''
@@ -87,7 +87,7 @@ class filler():
         line = '* Conference title (short title[optional]) (date, location)'
         '''
         sline = line.split('(')
-        if self.debug > 0 : print 'filler.setGlobal sline',sline
+        if self.debug > 0 : print('filler.setGlobal sline',sline)
         confName = sline[0][1:].strip()
         if len(sline)==2: # no shortName
             dayMonth = self.getDayMonth(sline[1])
@@ -104,7 +104,7 @@ class filler():
         self.global_items['date:'] = dayMonth
         self.global_items['conference:'] = confName
         self.global_items['short_conf_name: '] = shortName
-        if self.debug > 0 : print 'filler.setGlobal dayMonth',dayMonth,'shortName',shortName,'confName',confName
+        if self.debug > 0 : print('filler.setGlobal dayMonth',dayMonth,'shortName',shortName,'confName',confName)
         return
     def getShortName(self,conferenceName):
         '''
@@ -121,7 +121,7 @@ class filler():
         https://stackoverflow.com/questions/41191424/extract-first-character-of-each-word-from-the-sentence-string#41191463
         '''
         confName = conferenceName.replace(str(self.year),'').strip()
-        if self.debug > 1 : print 'filler.getShortName conferenceName',conferenceName,'confName',confName
+        if self.debug > 1 : print('filler.getShortName conferenceName',conferenceName,'confName',confName)
         if len(confName)<10:
             u = confName.strip() 
         else:
@@ -130,14 +130,14 @@ class filler():
                 u = ''.join([c[0].upper() for c in confName.split()])
         shortName = u + '_' +  str(self.year)
         shortName = shortName.replace(" ","_") # no blanks
-        if self.debug > 1 : print 'filler.getShortName shortName',shortName
+        if self.debug > 1 : print('filler.getShortName shortName',shortName)
         return shortName
     def getTemplate(self):
         '''
         transfer input from template at end of auto.cfg to dict
         '''
         f = open(self.acfg)
-        print 'filler.getTemplate Opened',self.acfg
+        print('filler.getTemplate Opened',self.acfg)
         i = 0
         foundFirstLine = False
         for line in f:
@@ -150,9 +150,9 @@ class filler():
                     self.fav_items[i] = line[:line.find(':')+1]
         f.close()
         if self.debug > 1 :
-            print 'filler.getTemplate template dict:'
+            print('filler.getTemplate template dict:')
             for k in sorted(self.fav_items):
-                print self.fav_items[k]
+                print(self.fav_items[k])
         return
     def fillGlobal(self):
         '''
@@ -160,12 +160,12 @@ class filler():
         '''
         for k in self.global_items:
             if self.global_items[k] is None:
-                v = raw_input('filler.fillGlobal Enter '+k)
+                v = input('filler.fillGlobal Enter '+k)
                 self.global_items[k] = v
         if self.debug > 0 :
-            print 'filler.fillGlobal global_items dict:'
+            print('filler.fillGlobal global_items dict:')
             for k in sorted(self.global_items):
-                print k,self.global_items[k]
+                print(k,self.global_items[k])
         return
     def fillOne(self,author,title):
         '''
@@ -174,7 +174,7 @@ class filler():
         one = {}
         
         if self.debug > 1:
-            print 'filler.fillOne self.fav_items',self.fav_items,'self.global_items',self.global_items
+            print('filler.fillOne self.fav_items',self.fav_items,'self.global_items',self.global_items)
             
         for i in self.fav_items:
             if i==0:
@@ -191,9 +191,9 @@ class filler():
                 else:
                     one[i] = v
         if self.debug > 1 :
-            print 'filler.fillOne for author',author,'title',title
+            print('filler.fillOne for author',author,'title',title)
             for k in sorted(one):
-                print one[k]
+                print(one[k])
         return one
     def fill(self):
         '''
@@ -205,9 +205,9 @@ class filler():
         fout= open(self.output,'w')
         ctr = 0
         for line in fin:
-            if self.debug > 1 : print 'filler.fill line[:-1]',line[:-1]
+            if self.debug > 1 : print('filler.fill line[:-1]',line[:-1])
             if line[0]=='*':
-                print line[:-1]
+                print(line[:-1])
                 self.reset_global_items()
                 self.setGlobal(line)
                 self.fillGlobal()
@@ -222,7 +222,7 @@ class filler():
                     fout.write(one[k]+'\n')
         fin.close()
         fout.close()
-        print 'filler.fill Wrote',ctr,'entries to',self.output
+        print('filler.fill Wrote',ctr,'entries to',self.output)
         return
     def testFillOne(self):
         self.fillOne('Jane Day','Relativity for kids')

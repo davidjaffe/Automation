@@ -11,7 +11,7 @@ import datetime
 #import numpy
 import copy
 #import glob # used in __init__
-import ConfigParser
+import configparser
 import subprocess
 import readB2MMS
 
@@ -20,18 +20,18 @@ class auto():
     def __init__(self,debug=0):
 
         self.debug = debug
-        print 'auto.__init__ debug',self.debug
+        print('auto.__init__ debug',self.debug)
 
         #### for generating reminder email
         self.readB2MMS = readB2MMS.readB2MMS(debug=debug)
 
         self.B2Members = self.readB2MMS.readB2M()
-        if debug > 1 : print self.B2Members
+        if debug > 1 : print(self.B2Members)
         for B2id in self.B2Members:
             fn,ln,email,category,inst = self.B2Members[B2id]
-            if debug > 1 : print 'self.B2Members[B2id]',B2id,self.B2Members[B2id],fn,ln,email,category,inst
+            if debug > 1 : print('self.B2Members[B2id]',B2id,self.B2Members[B2id],fn,ln,email,category,inst)
             if int(B2id)%100==0:
-                if debug > 0 : print '{:}, {:} {:}'.format(ln,fn,email)
+                if debug > 0 : print('{:}, {:} {:}'.format(ln,fn,email))
 
                     
 
@@ -65,7 +65,7 @@ class auto():
             v = self.fav_items[k]
             if type(v) is int: m = max(m,v)
         if m>-1:
-            self.newRecord_template = range(m+1)
+            self.newRecord_template = list(range(m+1))
         return
     def first(self,seckey=None,DryRun=True,Reminder=False):
         ''' 
@@ -81,13 +81,13 @@ class auto():
 
         if seckey is None : sys.exit('auto.first input seckey is None. NO ACTION TAKEN')
 
-        if DryRun is True : print 'auto.first Dry run only. Just show commands that would be executed.'
+        if DryRun is True : print('auto.first Dry run only. Just show commands that would be executed.')
             
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         cf = 'auto.cfg'
         config.read(cf)
         secs = config.sections()
-        if self.debug>0: print 'auto.first Opened',cf,'sections=',secs,'seckey=',seckey,'DryRun=',DryRun
+        if self.debug>0: print('auto.first Opened',cf,'sections=',secs,'seckey=',seckey,'DryRun=',DryRun)
 
         errorLog = {}
         nEntries = 0
@@ -97,9 +97,9 @@ class auto():
                 options = config.options(sec)
                 items = config.items(sec)
                 if self.debug>1:
-                    print 'auto.first',sec
-                    print 'auto.first options',options
-                    print 'auto.first items=',items
+                    print('auto.first',sec)
+                    print('auto.first options',options)
+                    print('auto.first items=',items)
                 newRecord = copy.copy(self.newRecord_template)
                 getTheFile = False
                 for pair in items:
@@ -110,38 +110,38 @@ class auto():
                     k,v = pair
                     for fav in self.fav_items:
                         if k==fav:
-                            if self.debug>1: print 'auto.first fav,k,v',fav,k,v
+                            if self.debug>1: print('auto.first fav,k,v',fav,k,v)
                             if fav=='talk_url' :
                                 fn = os.path.basename(v)
-                                if self.debug>2: print 'auto.first len(fn)',len(fn)
+                                if self.debug>2: print('auto.first len(fn)',len(fn))
                                 if len(fn)>0:
                                     if ('?' in fn) or ('&' in fn) or ('%' in fn) or fn=='0.pdf' or fn=='pres.pdf' or (len(fn)==5 and fn.split('.')[1]=='pdf'):  # protection against indico naming all files 0.pdf or 1.pdf, or weird paths defined by indico, etc.
                                         d = str(self.get_dest + sec + '.pdf')
                                     else:
                                         d = str(self.get_dest + fn)
                                     if os.path.isfile(d):
-                                        print '\nauto.first',sec,'No curl because file exists. File',d
+                                        print('\nauto.first',sec,'No curl because file exists. File',d)
                                     elif not getTheFile:
-                                        print '\nauto.first',sec,'No curl because talk_reference exists'
+                                        print('\nauto.first',sec,'No curl because talk_reference exists')
                                     elif v=='NA':
-                                        print '\nauto.first',sec,'No curl because talk_reference is NA'
+                                        print('\nauto.first',sec,'No curl because talk_reference is NA')
                                     else:
-                                        if self.debug>2: print 'auto.first d',d,'self.fav_items[fav]',self.fav_items[fav]
+                                        if self.debug>2: print('auto.first d',d,'self.fav_items[fav]',self.fav_items[fav])
                                         com = copy.copy(self.fav_items[fav])
                                         iURL = com.index('URL')
                                         iDEST= com.index('DEST')
                                         com[iURL] = v
                                         com[iDEST]= d
-                                        print '\nauto.first',sec,'com',' '.join(com)
+                                        print('\nauto.first',sec,'com',' '.join(com))
                                         if not DryRun: subprocess.call(com)
                                 else:
                                     if getTheFile:
-                                        print '\nauto.first',sec,'FILENAME IS ZERO LENGTH. NO TRANSFER'
+                                        print('\nauto.first',sec,'FILENAME IS ZERO LENGTH. NO TRANSFER')
                                     else:
-                                        print '\nauto.first',sec,'No file to transfer because talk_reference already exists'
+                                        print('\nauto.first',sec,'No file to transfer because talk_reference already exists')
                             else:
                                 newRecord[self.fav_items[fav]] = [fav,v]
-                if self.debug>0: print 'auto.first new record for',sec
+                if self.debug>0: print('auto.first new record for',sec)
                 conferenceName = seckey
                 for pair in newRecord:
                     if pair[0]=='conference' : conferenceName = pair[1]
@@ -151,13 +151,13 @@ class auto():
                         secondPart = ' ----------------- ERROR MISSING INFORMATION -----------------'
                         if sec not in errorLog: errorLog[sec] = []
                         errorLog[sec].append( pair )
-                    if self.debug>0 or 'ERROR' in secondPart: print pair[0],secondPart
+                    if self.debug>0 or 'ERROR' in secondPart: print(pair[0],secondPart)
                     if Reminder and pair[0]=='author':
                         self.composeReminder(secondPart,conferenceName)
-        print 'auto.first Processed',nEntries,'entries'
+        print('auto.first Processed',nEntries,'entries')
                                 
         for key in errorLog:
-            print 'auto.first ERROR',key,errorLog[key]
+            print('auto.first ERROR',key,errorLog[key])
         return
     def composeReminder(self,author,conference):
         '''
@@ -170,7 +170,7 @@ class auto():
         reminder = self.reminderTemplate.format(colleague=author, \
                     conference=conference,responsiblePCmember=self.responsiblePCmember, \
                     rPCemail=rPCemail,rSCmember=self.responsibleSCmember,link=self.PClink)
-        print '\n',email,'\n', subject, '\n', reminder, '\n'
+        print('\n',email,'\n', subject, '\n', reminder, '\n')
         return
     def getEmail(self,author):
         '''
@@ -186,12 +186,12 @@ class auto():
         middlen = None
         if len(s)>2 : middlen = s[1]
         matches = []
-        if self.debug>1 : print 'auto.getEmail author',author,'firstn',firstn,'middlen',middlen,'lastn',lastn
+        if self.debug>1 : print('auto.getEmail author',author,'firstn',firstn,'middlen',middlen,'lastn',lastn)
         for B2id in self.B2Members:
             fn,ln,email,category,inst = self.B2Members[B2id]
             MATCHED = False
             if ln.lower()==lastn.lower() :
-                if self.debug>1 : print 'auto.getEmail lastname match',lastn,ln,'firstn',firstn,'fn',fn
+                if self.debug>1 : print('auto.getEmail lastname match',lastn,ln,'firstn',firstn,'fn',fn)
                 if fn.lower()==firstn.lower() :
                     matches.append(B2id)
                     MATCHED = True
@@ -210,8 +210,8 @@ class auto():
                     MATCHED = True
 
         if self.debug > 0 :
-            print 'auto.getEmail author',author,'# matches',len(matches)
-            for B2id in matches: print self.B2Members[B2id][2]
+            print('auto.getEmail author',author,'# matches',len(matches))
+            for B2id in matches: print(self.B2Members[B2id][2])
         email = None
         if len(matches) > 0 : email = self.B2Members[matches[0]][2]
         return email
