@@ -27,7 +27,7 @@ class readB2MMS():
         self.debug = debug
 
         self.B2MembersFile = 'Members_List_20230531.csv' ##20230308.csv'
-        print 'readB2MMS.__init__ debug',debug
+        print('readB2MMS.__init__ debug',debug)
         
         
         return
@@ -37,9 +37,11 @@ class readB2MMS():
         return dict B2Members
         B2Members[B2id] =[firstname,lastname,email,category,inst]
         20230308 mods to handle .csv format
+        20230830 python3 mod to use encoding='ISO-8859-1' in open() because it didn't work without it
+        see chardet use in https://stackoverflow.com/questions/55563399/how-to-solve-unicodedecodeerror-utf-8-codec-cant-decode-byte-0xff-in-positio
         '''
         debug = self.debug
-        f = open(self.B2MembersFile,'r')
+        f = open(self.B2MembersFile,'r',encoding='ISO-8859-1') ## 20230830
         B2Members = {}
         qqq = '"""' # 3 double quote surrounds short name of institution
         for line in f:
@@ -58,14 +60,14 @@ class readB2MMS():
 
                 B2Members[B2id] = [firstn,lastn,email,category,sname]
 
-                if debug>0: print 'climate.ReadB2M B2id',B2id,'B2Members[B2id]',B2Members[B2id]
+                if debug>0: print('climate.ReadB2M B2id',B2id,'B2Members[B2id]',B2Members[B2id])
         f.close()
-        print 'readB2MMS.ReadB2M Processed',len(B2Members),'members in',self.B2MembersFile
+        print('readB2MMS.ReadB2M Processed',len(B2Members),'members in',self.B2MembersFile)
         return B2Members
     def goodMatch(self,a,b,ch='',inIt=False):
         A = a.strip().replace(ch,'').lower()
         B = b.strip().replace(ch,'').lower()
-        if self.debug>2: print 'readB2MMS.goodMatch a',a,'b',b,'A',A,'B',B,'ch',ch,'inIt',inIt
+        if self.debug>2: print('readB2MMS.goodMatch a',a,'b',b,'A',A,'B',B,'ch',ch,'inIt',inIt)
         if A==B and len(A)>0: return True
         if inIt:
             if (A in B or B in A) and len(A)>0 and len(B)>0: return True
@@ -87,11 +89,11 @@ class readB2MMS():
         ParpToInst = [] # list of pairs (Participant, B2id)
         for P in Parps:
             name1,name2,inst = self.unpackParticipants(P)
-            if debug>1: print 'Search for name1',name1,'name2',name2
+            if debug>1: print('Search for name1',name1,'name2',name2)
             Matches = [] # list of B2id of potential matches
             for B2id in Members:
                 firstn,middlen,lastn,lastnpre,sname = Members[B2id]
-                if debug>2: print 'readB2MMS.matchMtoI first/middle/last/pre/sname',firstn,'/',middlen,'/',lastn,'/',lastnpre,'/',sname
+                if debug>2: print('readB2MMS.matchMtoI first/middle/last/pre/sname',firstn,'/',middlen,'/',lastn,'/',lastnpre,'/',sname)
                 if self.goodMatch(name1,lastn):
                     Matches.append(B2id)
                 if self.goodMatch(name2,lastn):
@@ -111,11 +113,11 @@ class readB2MMS():
             if len(Matches)>1 and inst!=None: # try to match one name and institution
                 for ch in spacers:
                     newMatch = []
-                    if debug>1: print 'readB2MMS.matchMtoI name1/name2/inst',name1,'/',name2,'/',inst,'try to match one name and institution to resolve multi-match'.upper()
+                    if debug>1: print('readB2MMS.matchMtoI name1/name2/inst',name1,'/',name2,'/',inst,'try to match one name and institution to resolve multi-match'.upper())
                     for B2id in Matches:
                         firstn,middlen,lastn,lastnpre,sname = Members[B2id]
                         for name in [firstn,lastn,firstn]:
-                            if debug>1: print 'readB2MMS.matchMtoI B2id,name/sname',B2id,name,'/',sname
+                            if debug>1: print('readB2MMS.matchMtoI B2id,name/sname',B2id,name,'/',sname)
                             if self.goodMatch(name1,name,ch=ch) and (sname in inst): newMatch.append(B2id)
                             if self.goodMatch(name2,name,ch=ch) and (sname in inst): newMatch.append(B2id)
                     if len(newMatch)>0: Matches = newMatch
@@ -123,11 +125,11 @@ class readB2MMS():
                         
             if len(Matches)==0 and inst!=None: # no matches, desperation time
                 Matches = []
-                if debug>1: print 'readB2MMS.matchMtoI name1/name2/inst',name1,'/',name2,'/',inst,'try to match one name and institution to resolve 0 match'.upper()
+                if debug>1: print('readB2MMS.matchMtoI name1/name2/inst',name1,'/',name2,'/',inst,'try to match one name and institution to resolve 0 match'.upper())
                 for B2id in Members:
                     if self.desperateMatch(Members[B2id],P):
                         Matches.append(B2id)
-                        if debug>1: print 'readB2MMS.matchMtoI potential match B2id,name/sname',B2id,Members[B2id]
+                        if debug>1: print('readB2MMS.matchMtoI potential match B2id,name/sname',B2id,Members[B2id])
                         
             if len(Matches)>1:
                 newMatch = self.bestMatch(Matches,Members,P)
@@ -144,9 +146,9 @@ class readB2MMS():
                 JustRight += 1
                 B2id = Matches[0]
                 sname = Members[B2id][-1]
-                if debug>1: print 'readB2MMS.matchMtoI B2id',B2id,'sname',sname,'Members[B2id]',Members[B2id]
+                if debug>1: print('readB2MMS.matchMtoI B2id',B2id,'sname',sname,'Members[B2id]',Members[B2id])
                 if sname not in Insts:
-                    print 'readB2MMS.matchMtoI ERROR dict Insts does not contain key',sname,'for participant',P
+                    print('readB2MMS.matchMtoI ERROR dict Insts does not contain key',sname,'for participant',P)
                 ParpToInst.append( [P, Insts[sname]] )  # participant and Institution (city,country,longname,shortname)
             else:  # --------------> TOO MANY MATCHES
                 if debug>-1:
@@ -154,18 +156,18 @@ class readB2MMS():
                     self.printMatches(Matches,Members) 
                 TooMany += 1
                 ParpToInst.append( [P, None] ) # too many matches
-        print 'readB2MMS.matchMtoI',len(Parps),'participants,',JustRight,'single matches,',TooMany,'multi-matches,',TooFew,'No matches'
+        print('readB2MMS.matchMtoI',len(Parps),'participants,',JustRight,'single matches,',TooMany,'multi-matches,',TooFew,'No matches')
         
         if debug>1: # report participants and their institutions
             for pair in ParpToInst:
                 P,Home = pair
                 name1,name2,inst = self.unpackParticipants(P)
-                print 'readB2MMS.matchMtoI',name1,name2,
+                print('readB2MMS.matchMtoI',name1,name2, end=' ')
                 if Home is not None:
                     city,country,lname,sname = Home
-                    print 'is from',sname,'(',lname,') in ',city,',',country
+                    print('is from',sname,'(',lname,') in ',city,',',country)
                 else:
-                    print 'has no identified home institution'
+                    print('has no identified home institution')
                 
         return ParpToInst
     def printAsUnicode(self,wordList):
@@ -185,13 +187,13 @@ class readB2MMS():
                 except UnicodeDecodeError:
                     X = x.decode('ascii','ignore')
                 r.append( X )
-        for x in r:print x,
-        print ''
+        for x in r:print(x, end=' ')
+        print('')
         return
     def printMatches(self,idList,Members):
         for i,B2id in enumerate(idList):
             firstn,middlen,lastn,lastnpre,sname = Members[B2id]
-            print ' match#',i,B2id,firstn,'/',middlen,'/',lastn,'/',lastnpre,'/',sname
+            print(' match#',i,B2id,firstn,'/',middlen,'/',lastn,'/',lastnpre,'/',sname)
         return
     def bestMatch(self,Matches,Members,P):
         '''
@@ -270,5 +272,5 @@ if __name__ == '__main__' :
     for B2id in B2members:
         fn,ln,email,category,inst = B2members[B2id]
 
-        print '{:}, {:} {:}'.format(ln,fn,email)
+        print('{:}, {:} {:}'.format(ln,fn,email))
  
