@@ -72,9 +72,16 @@ class makeTalkTable():
         return
 if __name__ == '__main__' :
 
+
+    ### python makeTalkTable.py [filename] [debug] [date]
     debug = -1
-    filename = sys.argv[1]
     when = datetime.datetime.today()
+    if len(sys.argv)<2:
+        print('USAGE: python makeTalkTable.py [filename](required) [debug]('+str(debug)+') [date]('+when.strftime('%d-%b-%Y')+')')
+        sys.exit(' ')
+    filename = sys.argv[1]
+
+    
     if len(sys.argv)>2 : debug = int(sys.argv[2])
     if len(sys.argv)>3 : when  = sys.argv[3]
     
