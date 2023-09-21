@@ -5,6 +5,8 @@
 
 20211201 improve so only conference URL needs to be input for each conference and so all confernces can be treated in one pass
 
+20230921 Each header has to be unique. With the current code, identical headers will be produced if someone gives more than one talk at a single conference. The headers must be fixed by hand until the code is changed. 
+
 workflow
 1. by hand: cut/paste list of authors, titles from Public Conference talks to 'filler.input'
 2. by hand: edit filler.input to add 0th column="#" for lines to ignore, 0th column="*" for line with conference name, date
@@ -57,6 +59,7 @@ class filler():
         return
     def getDayMonth(self,line):
         '''
+        Only works if the format for line is
         line = '(nn-mm Month ...)'
         '''
         if self.debug > 0 : print('filler.getDayMonth line',line)

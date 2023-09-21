@@ -74,9 +74,10 @@ class auto():
         loop over sections and process all sections that match input seckey
         for matching sections, 
            check for favorite items, 
-           flag missing items and 
+           flag or fix missing items and 
            get remote file (if it has not already been downloaded) if this is not a dry run 
         
+        20230921 fix for missing abstract: set abstract text = title text 
         '''
 
         if seckey is None : sys.exit('auto.first input seckey is None. NO ACTION TAKEN')
@@ -145,6 +146,7 @@ class auto():
                 conferenceName = seckey
                 for pair in newRecord:
                     if pair[0]=='conference' : conferenceName = pair[1]
+                    if pair[0]=='abstract' and pair[1]=='': pair[1] = newRecord[self.fav_items['title']][1]
                 for pair in newRecord:
                     secondPart = pair[1]
                     if pair[1]=='':
