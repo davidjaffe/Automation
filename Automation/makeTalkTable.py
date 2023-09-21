@@ -60,7 +60,7 @@ class makeTalkTable():
             date = dtdate.strftime(tfmt)
             conf = ConfStart[dtdate]
 
-            print('\n--------- ',date,conf)
+            print('\n--------- ',conf,"("+date+")")
             for a in  sorted(Table[conf]):
                 n = ' '.join(a[0].split())
                 t = '"' + ' '.join(a[1].split()) + '"'
