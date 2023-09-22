@@ -78,8 +78,12 @@ class auto():
            get remote file (if it has not already been downloaded) if this is not a dry run 
         
         20230921 fix for missing abstract: set abstract text = title text 
+        20230922 add check on size of downloaded file. if size < minSize, then download may have silently failed. 
+        Download fails for conferences using KEK indico because a response to an onscreen message is required. 
         '''
 
+        minSize = 400000 # minimize size required for downloaded file
+        
         if seckey is None : sys.exit('auto.first input seckey is None. NO ACTION TAKEN')
 
         if DryRun is True : print('auto.first Dry run only. Just show commands that would be executed.')
@@ -134,7 +138,13 @@ class auto():
                                         com[iURL] = v
                                         com[iDEST]= d
                                         print('\nauto.first',sec,'com',' '.join(com))
-                                        if not DryRun: subprocess.call(com)
+                                        if not DryRun:
+                                            subprocess.call(com)
+                                            if self.debug>0: print('auto.first File download complete. File',d)
+                                            if os.path.isfile(d):
+                                                if self.debug>0: print('auto.first File',d,'exists. Size=',os.path.getsize(d))
+                                                if os.path.getsize(d) < minSize: print('\nauto.first WARNING: DOWNLOAD MAY HAVE FAILED. File size',os.path.getsize(d),'is less than minimum of',minSize,'for file',d)
+                                                                                        
                                 else:
                                     if getTheFile:
                                         print('\nauto.first',sec,'FILENAME IS ZERO LENGTH. NO TRANSFER')
@@ -146,7 +156,7 @@ class auto():
                 conferenceName = seckey
                 for pair in newRecord:
                     if pair[0]=='conference' : conferenceName = pair[1]
-                    if pair[0]=='abstract' and pair[1]=='': pair[1] = newRecord[self.fav_items['title']][1]
+                    if pair[0]=='abstract' and pair[1]=='': newRecord[self.fav_items['abstract']][1] = newRecord[self.fav_items['title']][1]
                 for pair in newRecord:
                     secondPart = pair[1]
                     if pair[1]=='':
