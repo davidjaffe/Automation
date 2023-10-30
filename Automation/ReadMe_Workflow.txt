@@ -5,7 +5,7 @@
 # 2. edit filler.input to add '*' for conference and '#' for blank lines. (more info in filler.input)
 # 3. python filler.input
 # 3.1 Add conference URLs from links on Public Conference talks page when requested by filler.py
-# 4. insert filler.output into auto.cfg (this file)
+# 4. insert filler.output into auto.cfg 
 # 5. Starting from links on Public Conference talks page, obtain links for all talks as provided by conference websites and insert in talk_url: 
 # 5.1 If available, obtain abstract and title from conference website and insert at abstract: and title: . Note that title sometimes differs from original
 # 5.1.1 If no abstract is available, use the title as abstract
