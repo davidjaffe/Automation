@@ -1,5 +1,5 @@
 #
-# Workflow
+######### Workflow to add links of talks as given to Public Conference Talks page
 # 0. 20230823 converted filler.py and auto.py from python2 to python3 with 2to3. filler.py was tested. auto.py was not, but only 1 non-print statement changed in conversion. 
 # 1. cut/paste from Public Conference talks page into filler.input (more info in filler.py and filler.input
 # 2. edit filler.input to add '*' for conference and '#' for blank lines. (more info in filler.input)
@@ -29,5 +29,12 @@
 # 13. python auto.py [SHORT CONF NAME] T -1 T
 # 14. cut/paste email, subject and email text into email message. (Would like to automate this part, too)
 #
-#
+###### Workflow to create new entries for conferences and talk on Public Conference Talks page
+# 1. From B2MMS Conference Manager, download Conferences.csv made by Saved Report "ConferenceTalksInfo". 
+# 2. Rename Conferences.csv Conferences_YYYYMMDD.csv in current directory where YYYYMMDDD is today's date
+# 3. From B2MMS Talks Manager, download Talks_new.csv made by "Assigned talks with conference start date"
+# 4. Rename Talks_new.csv Talks_new_YYYYMMDD.csv in current directory. 
+# 5. python makeTalkTable.py Talks_new_YYYYMMDD.csv 
+# 6. makeTalkTable.py outputs conference and talk info to terminal
+# 7. cut/paste appropriate sections into Public Conference Talks page (I haven't figured out how to format it so it can be cut/pasted as a block)
 #
