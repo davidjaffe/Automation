@@ -9,6 +9,7 @@ import sys,os
 import csv
 import datetime
 import dateutil.parser as dparser
+from pprint import pprint
 
 
 class makeTalkTable():
@@ -44,6 +45,7 @@ class makeTalkTable():
             i = reader.fieldnames.index(word)
             if i>-1 : nameList.append(word)
         ConfName, Speaker, Title, Status, Email, TalkType, StartDate = nameList
+        if debug > 1 : print('makeTalkTable.main ConfName',ConfName)
         Table = {}
         ConfStart = {}
         for row in reader:
@@ -51,14 +53,21 @@ class makeTalkTable():
             dtdate = dparser.parse(date)
             if dtdate>=when:
                 conf,speaker,title,talktype = row[ConfName],row[Speaker],row[Title],row[TalkType]
+                if debug > 1 : print('makeTalkTable.main conf',conf)
                 if conf not in Table:
                     Table[conf] = []
-                    ConfStart[dtdate] = conf
+                    ConfStart[conf] = dtdate
                 Table[conf].append( [row[Speaker], row[Title], row[TalkType], date ] )
 
-        for dtdate in sorted(ConfStart,reverse=True):
+        if debug > 1 :
+            print('makeTalkTable.main ConfStart',ConfStart)
+            print('makeTalkTable.main Table.keys()')
+            print(*Table.keys(),sep='\n')
+        for conf in sorted(ConfStart, key=ConfStart.get,reverse=True):
+            if debug > 0 : print('makeTalkTable.main conf',conf,'dtdate',dtdate)
+            dtdate = ConfStart[conf]
             date = dtdate.strftime(tfmt)
-            conf = ConfStart[dtdate]
+
 
             print('\n--------- ',conf,"("+date+")")
             for a in  sorted(Table[conf]):
@@ -83,7 +92,9 @@ if __name__ == '__main__' :
 
     
     if len(sys.argv)>2 : debug = int(sys.argv[2])
-    if len(sys.argv)>3 : when  = sys.argv[3]
+    if len(sys.argv)>3 :
+        when  = sys.argv[3]
+        when  = datetime.datetime.strptime(when,'%d-%b-%Y')
     
     mTT = makeTalkTable(debug=debug,cvsFile=filename,when=when)
     mTT.main()
